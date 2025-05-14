@@ -1,4 +1,4 @@
-- hosts: all
+- hosts: k8s
   become: true
   tasks:
     - name: Delete old deployment (ignore error if not present)
@@ -12,7 +12,5 @@
 
     - name: Apply new service
       shell: KUBECONFIG=/home/ubuntu/.kube/config kubectl apply -f /home/ubuntu/Service.yml
-
-
 
 
