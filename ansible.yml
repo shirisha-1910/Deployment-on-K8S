@@ -1,4 +1,3 @@
----
 - name: Deploy application to Kubernetes node
   hosts: node
   become: true
@@ -9,13 +8,12 @@
         dest: /home/ubuntu/Deployment.yml
 
     - name: Delete old deployment (ignore error if not exists)
-      shell: kubectl delete -f /home/ubuntu/Deployment.yml || true
+      shell: |
+        kubectl delete -f /home/ubuntu/Deployment.yml --kubeconfig /home/ubuntu/.kube/config || true
 
     - name: Apply new deployment
-      shell: kubectl apply -f /home/ubuntu/Deployment.yml
-
-
-
+      shell: |
+        kubectl apply -f /home/ubuntu/Deployment.yml --kubeconfig /home/ubuntu/.kube/config
 
 
 
