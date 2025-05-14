@@ -1,0 +1,58 @@
+node {
+
+    stage('Git checkout') {
+        git branch: 'main', url: 'https://github.com/shirisha-1910/Deployment-on-K8S.git'
+    }
+
+    stage('Send dockerfiles files to Ansible server over SSH') {
+        sshagent(['ansible']) {
+            sh 'scp -o StrictHostKeyChecking=no /var/lib/jenkins/workspace/Pipeline/* ubuntu@172.31.3.208:/home/ubuntu/'
+        }
+    }
+
+    stage('Docker Build image') {
+        sshagent(['ansible']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ubuntu@172.31.3.208 '
+                    cd /home/ubuntu &&
+                    docker image build -t pipeline:v1.${BUILD_ID} .
+                '
+            """
+        }
+    }
+
+    stage('Docker image tagging') {
+        sshagent(['ansible']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ubuntu@172.31.3.208 '
+                    docker image tag pipeline:v1.${BUILD_ID} sirishassss/pipeline:v1.${BUILD_ID} &&
+                    docker image tag pipeline:v1.${BUILD_ID} sirishassss/pipeline:latest
+                '
+            """
+        }
+    }
+
+    stage('Push Docker images to Docker Hub') {
+        sshagent(['ansible']) {
+            withCredentials([string(credentialsId: 'dockerhub_passwd', variable: 'DOCKERHUB_PASS')]) {
+                sh """
+                    ssh -o StrictHostKeyChecking=no ubuntu@172.31.3.208 '
+                        echo "${DOCKERHUB_PASS}" | docker login -u sirishassss --password-stdin &&
+                        docker push sirishassss/pipeline:v1.${BUILD_ID} &&
+                        docker push sirishassss/pipeline:latest
+                    '
+                """
+            }
+        }
+    }
+
+    stage('Copy manifests to K8s server') {
+        sshagent(['ansible']) {
+            sh """
+                ssh -o StrictHostKeyChecking=no ubuntu@172.31.3.208 '
+                cd /home/ubuntu && ansible-playbook ansible.yml '
+            """
+        }
+    }
+
+}
