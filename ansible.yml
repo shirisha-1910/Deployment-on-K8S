@@ -1,6 +1,8 @@
 - hosts: all
   become: true
   tasks:
+     - name: copy file
+       command: cp KUBECONFIG.yaml ~/.kube/config
      - name: kubectl
        command: kubectl get nodes
      - name: delete old deployment
