@@ -1,8 +1,8 @@
 - hosts: all
   become: true
   tasks:
-     - name: copy file
-       command: cp KUBECONFIG.yaml ~/.kube/config
+     - name: update kubeconfig
+       command: aws eks update-kubeconfig --region ap-south-1 --name cluster 
      - name: kubectl
        command: kubectl get nodes
      - name: delete old deployment
