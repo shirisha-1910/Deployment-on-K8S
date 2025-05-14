@@ -4,7 +4,7 @@
      - name: update kubeconfig
        command: aws eks update-kubeconfig --region ap-south-1 --name cluster 
      - name: kubectl
-       command: kubectl get nodes
+       command: ls && cat ~/.kube/config
      - name: delete old deployment
        command: kubectl delete -f /home/ubuntu/Deployment.yml
      - name: delete old service
