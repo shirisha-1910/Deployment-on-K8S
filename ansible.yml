@@ -1,16 +1,16 @@
-- hosts: k8s
-  become: true
+- name: Deploy app to EKS
+  hosts: k8s
   tasks:
-    - name: Delete old deployment (ignore error if not present)
-      shell: KUBECONFIG=/home/ubuntu/.kube/config kubectl delete -f /home/ubuntu/Deployment.yml || true
+    - name: Configure kubeconfig for EKS
+      shell: aws eks update-kubeconfig --region ap-south-1 --name my-eks-cluster
 
-    - name: Delete old service (ignore error if not present)
-      shell: KUBECONFIG=/home/ubuntu/.kube/config kubectl delete -f /home/ubuntu/Service.yml || true
+    - name: Delete old deployment
+      shell: kubectl delete -f /home/ubuntu/Deployment.yml || true
 
     - name: Apply new deployment
-      shell: KUBECONFIG=/home/ubuntu/.kube/config kubectl apply -f /home/ubuntu/Deployment.yml
+      shell: kubectl apply -f /home/ubuntu/Deployment.yml
 
-    - name: Apply new service
-      shell: KUBECONFIG=/home/ubuntu/.kube/config kubectl apply -f /home/ubuntu/Service.yml
+    - name: Apply service
+      shell: kubectl apply -f /home/ubuntu/Service.yml
 
 
