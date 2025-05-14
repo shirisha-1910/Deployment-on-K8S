@@ -1,22 +1,21 @@
 ---
-- name: Deploy app to EKS
-  hosts: all
+- name: Deploy application to Kubernetes node
+  hosts: node
+  become: true
   tasks:
-    - name: Set KUBECONFIG environment variable
-      shell: export KUBECONFIG=/home/ubuntu/.kube/config
-      become: true
+    - name: Ensure deployment file exists
+      copy:
+        src: ./Deployment.yml
+        dest: /home/ubuntu/Deployment.yml
 
-    - name: Delete old deployment
+    - name: Delete old deployment (ignore error if not exists)
       shell: kubectl delete -f /home/ubuntu/Deployment.yml || true
-      become: true
 
     - name: Apply new deployment
       shell: kubectl apply -f /home/ubuntu/Deployment.yml
-      become: true
 
-    - name: Apply service
-      shell: kubectl apply -f /home/ubuntu/Service.yml
-      become: true
+
+
 
 
 
