@@ -1,16 +1,22 @@
+---
 - name: Deploy app to EKS
-  hosts: k8s
+  hosts: all
   tasks:
-    - name: Configure kubeconfig for EKS
-      shell: aws eks update-kubeconfig --region ap-south-1 --name my-eks-cluster
+    - name: Set KUBECONFIG environment variable
+      shell: export KUBECONFIG=/home/ubuntu/.kube/config
+      become: true
 
     - name: Delete old deployment
       shell: kubectl delete -f /home/ubuntu/Deployment.yml || true
+      become: true
 
     - name: Apply new deployment
       shell: kubectl apply -f /home/ubuntu/Deployment.yml
+      become: true
 
     - name: Apply service
       shell: kubectl apply -f /home/ubuntu/Service.yml
+      become: true
+
 
 
