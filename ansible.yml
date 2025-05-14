@@ -1,19 +1,11 @@
-- name: Deploy application to Kubernetes node
-  hosts: node
+- hosts: all
   become: true
-  tasks:
-    - name: Ensure deployment file exists
-      copy:
-        src: ./Deployment.yml
-        dest: /home/ubuntu/Deployment.yml
-
-    - name: Delete old deployment (ignore error if not exists)
-      shell: |
-        kubectl delete -f /home/ubuntu/Deployment.yml --kubeconfig /home/ubuntu/.kube/config || true
-
-    - name: Apply new deployment
-      shell: |
-        kubectl apply -f /home/ubuntu/Deployment.yml --kubeconfig /home/ubuntu/.kube/config
-
-
-
+  tasks: 
+     - name: delete old deployment
+       command: kubectl delete -f /home/ubuntu/Deployment.yml
+     - name: delete old service
+       command: kubectl delete -f /home/ubuntu/Service.yml
+     - name: create new deployment
+       command: kubectl apply -f /home/ubuntu/Deployment.yml
+     - name: create new service
+       command: kubectl apply -f /home/ubuntu/Service.yml
