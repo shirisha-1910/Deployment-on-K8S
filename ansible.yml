@@ -12,3 +12,6 @@
 
     - name: Apply new service
       shell: KUBECONFIG=/home/ubuntu/.kube/config kubectl apply -f /home/ubuntu/Service.yml
+
+
+
